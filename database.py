@@ -63,11 +63,10 @@ class Clients:
         :return: The updated Client object
         """
         for i,client in enumerate(Clients.l):
-            if client == ssn:
+            if client.ssn == ssn:
                 Clients.l[i].name = name
                 Clients.l[i].last_name = last_name
                 return Clients.l[i]
-
 
     @staticmethod
     def delete(ssn):
@@ -79,5 +78,5 @@ class Clients:
         :return: The deleted Client Object
         """
         for i, client in enumerate(Clients.l):
-            if client == ssn:
-                return Clients.l[i].pop(i)
+            if client.ssn == ssn:
+                return Clients.l.pop(i)
