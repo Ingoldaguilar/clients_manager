@@ -32,7 +32,7 @@ class Clients:
         :return: Client Object
         """
         for client in Clients.l:
-            if client == ssn:
+            if client.ssn == ssn:
                 return client
 
     @staticmethod
