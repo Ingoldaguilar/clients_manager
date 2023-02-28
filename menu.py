@@ -5,12 +5,13 @@ GUI to connect the database.py with run.py in a friendly way for a user.
 # ---- Menu Documentation ----
 
 # ---- Imports ----
-import os
+import helpers
+import database as db
 # ---- End Imports ----
 
 def init():
     while True:
-        os.system('cls')  # clean screen
+        helpers.clean_screen()  # clean screen
 
         print("==================================")
         print("  Welcome to the Clients Manager  ")
@@ -24,23 +25,44 @@ def init():
         print("==================================")
 
         option = input("> ")
-        os.system("cls")
+        helpers.clean_screen()
 
         if option == '1':
             print("Displaying the clients...\n")
-            # TODO List clients in the menu
+            for client in db.Clients.l:
+                print(client)
+
         elif option == '2':
             print("Searching the client...\n")
-            # TODO
+            ssn = helpers.read_text(3, 3, "DNI (2 numbers and 1 letter)").upper()
+            client = db.Clients.search(ssn)
+            print(client) if client else print("Client no found.")
+
         elif option == '3':
             print("Adding the client...\n")
-            # TODO
+            ssn = helpers.read_text(3, 3, "DNI (2 numbers and 1 letter)").upper()
+            name = helpers.read_text(2,30, "Name (from 2 to 30 letters)").capitalize()
+            last_name = helpers.read_text(2,30, "Last Name (from 2 to 30 letters)").capitalize()
+            db.Clients.create(ssn, name, last_name)
+            print("Client created successfully.")
+
         elif option == '4':
             print("Modifying the client...\n")
-            # TODO
+            ssn = helpers.read_text(3, 3, "DNI (2 numbers and 1 letter)").upper()
+            client = db.Clients.search(ssn)
+            if client:
+                name = helpers.read_text(2, 30, f"Name (from 2 to 30 letters) [{client.name}]").capitalize()
+                last_name = helpers.read_text(2, 30, f"Last Name (from 2 to 30 letters) [{client.last_name}]").capitalize()
+                db.Clients.modify(client.ssn, name, last_name)
+                print("Client modified successfully.")
+            else:
+                print("Client not found.")
+
         elif option == '5':
             print("Deleting the client...\n")
-            # TODO
+            ssn = helpers.read_text(3, 3, "DNI (2 numbers and 1 letter)").upper()
+            print("Client deleted successfully.") if db.Clients.delete(ssn) else print("Client not found.")
+
         elif option == '6':
             print("Bye!\n")
             break
