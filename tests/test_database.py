@@ -7,6 +7,7 @@ the database.
 import unittest
 import database as db
 import copy
+import helpers
 # ---- End Imports ----
 
 class TestDatabase(unittest.TestCase):
@@ -43,3 +44,10 @@ class TestDatabase(unittest.TestCase):
         researched_client = db.Clients.search('48H')  # should be None.
         self.assertEqual(deleted_client.ssn, '48H')
         self.assertIsNone(researched_client)
+
+    def test_valid_ssn(self):
+        self.assertTrue(helpers.valid_ssn('00A', db.Clients.l))
+        self.assertFalse(helpers.valid_ssn('232323S', db.Clients.l))
+        self.assertFalse(helpers.valid_ssn('F35', db.Clients.l))
+        self.assertFalse(helpers.valid_ssn('4F2', db.Clients.l))
+        self.assertFalse(helpers.valid_ssn('48H', db.Clients.l))

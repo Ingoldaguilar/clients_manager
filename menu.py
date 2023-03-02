@@ -40,7 +40,14 @@ def init():
 
         elif option == '3':
             print("Adding the client...\n")
-            ssn = helpers.read_text(3, 3, "DNI (2 numbers and 1 letter)").upper()
+
+            ssn = None
+            while True:
+                ssn = helpers.read_text(3, 3, "DNI (2 numbers and 1 letter)").upper()
+                if helpers.valid_ssn(ssn, db.Clients.l):
+                    # if the ssn introduced is valid.
+                    break
+
             name = helpers.read_text(2,30, "Name (from 2 to 30 letters)").capitalize()
             last_name = helpers.read_text(2,30, "Last Name (from 2 to 30 letters)").capitalize()
             db.Clients.create(ssn, name, last_name)

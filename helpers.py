@@ -7,6 +7,7 @@ Module for auxiliary functions.
 # ---- Imports ----
 import os
 import platform
+import re
 # ---- End Imports ----
 
 # ---- Functions ----
@@ -35,4 +36,31 @@ def read_text(min_len=0, max_len=100, message=None):
         text = input("> ")
         if len(text) >= min_len and len(text) <= max_len:
             return text
+
+def valid_ssn(ssn, l):
+    """
+    This function receive a ssn and a list
+    of clients, and validate the introduced
+    ssn; first validate if the ssn have the
+    correct structure (two nums and 1 letter)
+    and then validate if the ssn is not in
+    use in any client of the list that is
+    passed. If the ssn pass the two 'tests'
+    it'll return True, if not, it'll return
+    False.
+    :param ssn: social security number, introduced by the user
+    :param l: list of Client objects
+    :return: False or True
+    """
+    # validate if the ssn is correctly structured.
+    if not re.match('[0-9]{2}[A-Z]$', ssn):  # 2 numbers and 1 char
+        print(f"Invalid ssn '{ssn}', must have two numbers and one letter.")
+        return False
+
+    # validate if the ssn is free to use
+    for client in l:
+        if client.ssn == ssn:
+            print(f"Invalid ssn '{ssn}', already in use.")
+            return False
+    return True
 # ---- End Functions ----
