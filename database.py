@@ -5,7 +5,7 @@ Module used to manage the data.
 # ---- End Database Documentation ----
 
 # ---- Imports ----
-
+import csv
 # ---- End Imports ----
 
 class Client:
@@ -21,6 +21,11 @@ class Client:
 class Clients:
 
     l = []  # Client's list
+    with open("clients.csv", newline='\n') as file:
+        reader = csv.reader(file, delimiter=';')
+        for ssn, name, last_name in reader:
+            client = Client(ssn, name, last_name)
+            l.append(client)
 
     @staticmethod
     def search(ssn):
