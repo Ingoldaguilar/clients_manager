@@ -32,7 +32,7 @@ class Clients:
         """
         This function receive a ssn, search in the
         list of clients in the class Clients and return
-        that client if the ssn matches
+        that client if the ssn matches.
         :param ssn: social security number ()
         :return: Client Object
         """
@@ -53,6 +53,7 @@ class Clients:
         """
         client = Client(ssn, name, last_name)
         Clients.l.append(client)
+        Clients.save()
         return client
 
     @staticmethod
@@ -71,6 +72,7 @@ class Clients:
             if client.ssn == ssn:
                 Clients.l[i].name = name
                 Clients.l[i].last_name = last_name
+                Clients.save()
                 return Clients.l[i]
 
     @staticmethod
@@ -84,4 +86,14 @@ class Clients:
         """
         for i, client in enumerate(Clients.l):
             if client.ssn == ssn:
-                return Clients.l.pop(i)
+                dclient = Clients.l.pop(i)
+                Clients.save()
+                return dclient
+
+    @staticmethod
+    def save():
+        with open("clients.csv", 'w', newline='\n') as file:
+            writer = csv.writer(file, delimiter=';')
+
+            for client in Clients.l:
+                writer.writerow( (client.ssn, client.name, client.last_name) )
