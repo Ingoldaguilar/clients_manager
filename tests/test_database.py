@@ -4,7 +4,9 @@ the database.
 """
 
 # ---- Imports ----
+import csv
 import unittest
+import config
 import database as db
 import copy
 import helpers
@@ -51,3 +53,22 @@ class TestDatabase(unittest.TestCase):
         self.assertFalse(helpers.valid_ssn('F35', db.Clients.l))
         self.assertFalse(helpers.valid_ssn('4F2', db.Clients.l))
         self.assertFalse(helpers.valid_ssn('48H', db.Clients.l))
+
+    def test_csv_writing(self):
+        """
+        This functions tests that the manipulation of csv
+        files is working. (deleting and modifying)
+        :return: None
+        """
+        db.Clients.delete('48H')
+        db.Clients.delete('15J')
+        db.Clients.modify('28Z', 'Mariana', 'Garcia')
+
+        ssn, name, last_name = None, None, None
+        with open(config.DATABASE_PATH, newline='\n') as file:
+            reader = csv.reader(file, delimiter=";")
+            ssn, name, last_name = next(reader)
+
+        self.assertEqual(ssn, '28Z')
+        self.assertEqual(name, 'Mariana')
+        self.assertEqual(last_name, 'Garcia')
