@@ -6,6 +6,8 @@ A file for store the user interface.
 
 # ---- Imports ----
 from tkinter import *
+from tkinter import ttk
+import database as db
 # ---- End Imports ----
 
 class CenterWidgetMixin:
@@ -32,12 +34,53 @@ class MainWindow(Tk, CenterWidgetMixin):
         self.center()
 
     def build(self):
-        button = Button(self, text="Hello", command=self.hello)
-        button.pack()
+        # frame for the program.
+        frame = Frame(self)
+        frame.pack()
 
-    def hello(self):
-        print("Hello world!")
-        self.destroy()
+        # create a table(treeview) in our frame.
+        treeview = ttk.Treeview(frame)
+        treeview['columns'] = ('SSN', 'Name', 'LastName')
+
+        # column's configuration
+        treeview.column("#0", width=0, stretch=NO) # refer to column 0
+        treeview.column("SSN", anchor='w')
+        treeview.column("Name", anchor='w')
+        treeview.column("LastName", anchor='w')
+
+        #header's configuration
+        treeview.heading("SSN", text="SSN", anchor=CENTER)
+        treeview.heading("Name",  text="Name", anchor=CENTER)
+        treeview.heading("LastName",  text="LastName", anchor=CENTER)
+
+        # scrollbar configuration
+        scrollbar = Scrollbar(frame)
+        scrollbar.pack(side=RIGHT, fill=Y)
+
+        # set scrollbar in the treeview
+        treeview['yscrollcommand'] = scrollbar.set
+
+        # show db information in the table
+        for client in db.Clients.l:
+            treeview.insert(
+                parent='', index='end', iid=client.ssn,
+                values=(client.ssn, client.name, client.last_name)
+            )
+
+        # pack the treeview
+        treeview.pack()
+
+        # Button's Frame
+        frame = Frame(self)
+        frame.pack(pady=20)
+
+        # Buttons
+        Button(frame, text="Create", command=None).grid(row=0, column=0)
+        Button(frame, text="Modify", command=None).grid(row=0, column=1)
+        Button(frame, text="Delete", command=None).grid(row=0, column=2)
+
+        # access to the treeview from another methods
+        self.treeview = treeview
 
     def center(self):
         self.update()
