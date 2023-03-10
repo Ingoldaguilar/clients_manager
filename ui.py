@@ -7,6 +7,7 @@ A file for store the user interface.
 # ---- Imports ----
 from tkinter import *
 from tkinter import ttk
+from tkinter.messagebox import askokcancel, WARNING
 import database as db
 # ---- End Imports ----
 
@@ -77,22 +78,23 @@ class MainWindow(Tk, CenterWidgetMixin):
         # Buttons
         Button(frame, text="Create", command=None).grid(row=0, column=0)
         Button(frame, text="Modify", command=None).grid(row=0, column=1)
-        Button(frame, text="Delete", command=None).grid(row=0, column=2)
+        Button(frame, text="Delete", command=self.delete).grid(row=0, column=2)
 
         # access to the treeview from another methods
         self.treeview = treeview
 
-    def center(self):
-        self.update()
-        w = self.winfo_width()
-        h = self.winfo_height()
-        ws = self.winfo_screenwidth()
-        hs = self.winfo_screenheight()
-        x = int(ws/2 - w/2)
-        y = int(hs/2 - h/2)
+    def delete(self):
+        client = self.treeview.focus()
+        if client:
+            field = self.treeview.item(client, 'values')
+            confirm = askokcancel(
+                title="Deleting confirmation",
+                message=f"Are you sure you want to delete {field[1]} {field[2]}",
+                icon=WARNING
+            )
+            if confirm:
+                self.treeview.delete(client)
 
-        # how it works geometry("WIDTHxHEIGHT+OFFSET_X+OFFSET_Y")
-        self.geometry(f"{w}x{h}+{x}+{y}")
 
 if __name__ == "__main__":
     app = MainWindow()
