@@ -25,6 +25,48 @@ class CenterWidgetMixin:
         # how it works geometry("WIDTHxHEIGHT+OFFSET_X+OFFSET_Y")
         self.geometry(f"{w}x{h}+{x}+{y}")
 
+class CreateClientWindow(Toplevel, CenterWidgetMixin):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Create client")
+        self.build()
+        self.center()
+
+        # Can't interact with the main window
+        # if it's another opened.
+        self.transient(parent)
+        self.grab_set()
+
+    def create_client(self):
+        pass
+
+    def close(self):
+        # destroy a window
+        self.destroy()
+        self.update()
+
+    def build(self):
+        frame = Frame(self)
+        frame.pack(padx=20, pady=10)
+
+        Label(frame, text="SSN (2 ints and 1 upper char)").grid(row=0, column=0)
+        Label(frame, text="Name (2 to 30 chars)").grid(row=0, column=1)
+        Label(frame, text="LastName (2 to 30 chars)").grid(row=0, column=2)
+
+        ssn = Entry(frame)
+        ssn.grid(row=1, column=0)
+        name = Entry(frame)
+        name.grid(row=1, column=1)
+        LastName = Entry(frame)
+        LastName.grid(row=1, column=2)
+
+        frame = Frame(self)
+        frame.pack(pady=10)
+        create = Button(frame, text="create", command=self.create_client)
+        create.configure(state=DISABLED)
+        create.grid(row=0, column=0)
+        Button(frame, text="cancel", command=self.close).grid(row=0, column=1)
+
 
 class MainWindow(Tk, CenterWidgetMixin):
 
@@ -76,7 +118,7 @@ class MainWindow(Tk, CenterWidgetMixin):
         frame.pack(pady=20)
 
         # Buttons
-        Button(frame, text="Create", command=None).grid(row=0, column=0)
+        Button(frame, text="Create", command=self.create).grid(row=0, column=0)
         Button(frame, text="Modify", command=None).grid(row=0, column=1)
         Button(frame, text="Delete", command=self.delete).grid(row=0, column=2)
 
@@ -95,6 +137,8 @@ class MainWindow(Tk, CenterWidgetMixin):
             if confirm:
                 self.treeview.delete(client)
 
+    def create(self):
+        CreateClientWindow(self)
 
 if __name__ == "__main__":
     app = MainWindow()
