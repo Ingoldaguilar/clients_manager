@@ -8,6 +8,7 @@ A file for store the user interface.
 from tkinter import *
 from tkinter import ttk
 from tkinter.messagebox import askokcancel, WARNING
+import helpers
 import database as db
 # ---- End Imports ----
 
@@ -45,6 +46,13 @@ class CreateClientWindow(Toplevel, CenterWidgetMixin):
         self.destroy()
         self.update()
 
+    def validate(self, event, index):
+        value = event.widget.get()
+        valid = helpers.valid_ssn(value, db.Clients.l) if index == 0 \
+                else (value.isalpha() and len(value) >= 2 and len(value) <= 30)
+        event.widget.configure({"bg":"Green" if valid else "Red"})
+
+
     def build(self):
         frame = Frame(self)
         frame.pack(padx=20, pady=10)
@@ -55,10 +63,16 @@ class CreateClientWindow(Toplevel, CenterWidgetMixin):
 
         ssn = Entry(frame)
         ssn.grid(row=1, column=0)
+        # event
+        ssn.bind('<KeyRelease>', lambda event: self.validate(event, 0) )
+
         name = Entry(frame)
         name.grid(row=1, column=1)
+        name.bind('<KeyRelease>', lambda event: self.validate(event, 1) )
+
         LastName = Entry(frame)
         LastName.grid(row=1, column=2)
+        LastName.bind('<KeyRelease>', lambda event: self.validate(event, 2) )
 
         frame = Frame(self)
         frame.pack(pady=10)
