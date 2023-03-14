@@ -33,13 +33,17 @@ class CreateClientWindow(Toplevel, CenterWidgetMixin):
         self.build()
         self.center()
 
-        # Can't interact with the main window
+        # user can't interact with the main window
         # if it's another opened.
         self.transient(parent)
         self.grab_set()
 
     def create_client(self):
-        pass
+        self.master.treeview.insert(
+            parent='', index='end', iid=self.ssn.get(),
+            values=(self.ssn.get(), self.name.get(), self.last_name.get())
+        )
+        self.close()
 
     def close(self):
         # destroy a window
@@ -52,6 +56,9 @@ class CreateClientWindow(Toplevel, CenterWidgetMixin):
                 else (value.isalpha() and len(value) >= 2 and len(value) <= 30)
         event.widget.configure({"bg":"Green" if valid else "Red"})
 
+        # change the button status based on choose
+        self.validations[index] = valid
+        self.create.config(state=NORMAL if self.validations == [1,1,1] else DISABLED)
 
     def build(self):
         frame = Frame(self)
@@ -81,6 +88,11 @@ class CreateClientWindow(Toplevel, CenterWidgetMixin):
         create.grid(row=0, column=0)
         Button(frame, text="cancel", command=self.close).grid(row=0, column=1)
 
+        self.validations = [0, 0, 0]
+        self.create = create
+        self.ssn = ssn
+        self.name = name
+        self.last_name = LastName
 
 class MainWindow(Tk, CenterWidgetMixin):
 
