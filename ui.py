@@ -43,6 +43,7 @@ class CreateClientWindow(Toplevel, CenterWidgetMixin):
             parent='', index='end', iid=self.ssn.get(),
             values=(self.ssn.get(), self.name.get(), self.last_name.get())
         )
+        db.Clients.create(self.ssn.get(), self.name.get(), self.last_name.get())
         self.close()
 
     def close(self):
@@ -109,6 +110,7 @@ class EditClientWindow(Toplevel, CenterWidgetMixin):
     def edit_client(self):
         client = self.master.treeview.focus()
         self.master.treeview.item(client, values=(self.ssn.get(), self.name.get(), self.last_name.get()))
+        db.Clients.modify(self.ssn.get(), self.name.get(), self.last_name.get())
         self.close()
 
     def close(self):
@@ -233,6 +235,7 @@ class MainWindow(Tk, CenterWidgetMixin):
             )
             if confirm:
                 self.treeview.delete(client)
+                db.Clients.delete(field[0])
 
     def create(self):
         CreateClientWindow(self)
