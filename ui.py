@@ -6,7 +6,7 @@ A file for store the user interface.
 
 # ---- Imports ----
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk, messagebox
 from tkinter.messagebox import askokcancel, WARNING
 import helpers
 import database as db
@@ -94,6 +94,77 @@ class CreateClientWindow(Toplevel, CenterWidgetMixin):
         self.name = name
         self.last_name = LastName
 
+class EditClientWindow(Toplevel, CenterWidgetMixin):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.title("Update client")
+        self.build()
+        self.center()
+
+        # user can't interact with the main window
+        # if it's another opened.
+        self.transient(parent)
+        self.grab_set()
+
+    def edit_client(self):
+        client = self.master.treeview.focus()
+        self.master.treeview.item(client, values=(self.ssn.get(), self.name.get(), self.last_name.get()))
+        self.close()
+
+    def close(self):
+        # destroy a window
+        self.destroy()
+        self.update()
+
+    def validate(self, event, index):
+        value = event.widget.get()
+        valid = helpers.valid_ssn(value, db.Clients.l) if index == 0 \
+                else (value.isalpha() and len(value) >= 2 and len(value) <= 30)
+        event.widget.configure({"bg":"Green" if valid else "Red"})
+
+        # change the button status based on choose
+        self.validations[index] = valid
+        self.upload.config(state=NORMAL if self.validations == [0,1,1] else DISABLED)
+
+    def build(self):
+        frame = Frame(self)
+        frame.pack(padx=20, pady=10)
+
+        Label(frame, text="SSN (no editable)").grid(row=0, column=0)
+        Label(frame, text="Name (2 to 30 chars)").grid(row=0, column=1)
+        Label(frame, text="LastName (2 to 30 chars)").grid(row=0, column=2)
+
+        ssn = Entry(frame)
+        ssn.grid(row=1, column=0)
+
+        name = Entry(frame)
+        name.grid(row=1, column=1)
+        name.bind('<KeyRelease>', lambda event: self.validate(event, 1) )
+
+        LastName = Entry(frame)
+        LastName.grid(row=1, column=2)
+        LastName.bind('<KeyRelease>', lambda event: self.validate(event, 2) )
+
+        client = self.master.treeview.focus()
+        fields = self.master.treeview.item(client, 'values')
+        ssn.insert(0, fields[0])
+        ssn.config(state=DISABLED)
+        name.insert(1, fields[1])
+        LastName.insert(2, fields[2])
+
+        frame = Frame(self)
+        frame.pack(pady=10)
+
+        upload = Button(frame, text="create", command=self.edit_client)
+        upload.grid(row=0, column=0)
+        Button(frame, text="cancel", command=self.close).grid(row=0, column=1)
+
+        self.validations = [0,1, 1]
+        self.upload = upload
+        self.ssn = ssn
+        self.name = name
+        self.last_name = LastName
+
 class MainWindow(Tk, CenterWidgetMixin):
 
     def __init__(self):
@@ -145,7 +216,7 @@ class MainWindow(Tk, CenterWidgetMixin):
 
         # Buttons
         Button(frame, text="Create", command=self.create).grid(row=0, column=0)
-        Button(frame, text="Modify", command=None).grid(row=0, column=1)
+        Button(frame, text="Modify", command=self.edit).grid(row=0, column=1)
         Button(frame, text="Delete", command=self.delete).grid(row=0, column=2)
 
         # access to the treeview from another methods
@@ -165,6 +236,12 @@ class MainWindow(Tk, CenterWidgetMixin):
 
     def create(self):
         CreateClientWindow(self)
+
+    def edit(self):
+        if self.treeview.focus():
+            EditClientWindow(self)
+        else:
+            messagebox.showinfo("Error", "Please select a client to modify")
 
 if __name__ == "__main__":
     app = MainWindow()
