@@ -1,5 +1,5 @@
 CRUD Project
 
 - Real time verification
-- Fake Database (csv file)
+- Database management (csv file)
 - GUI (Tkinter)
